@@ -1,9 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import '../../config/constants.dart';
+import '../../providers/user_provider.dart';
+import '../../services/auth_service.dart';
+import '../../services/database_service.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/custom_button.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
@@ -22,7 +27,7 @@ class OTPVerificationScreen extends StatefulWidget {
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final TextEditingController _pinController = TextEditingController();
 
-  static const int _otpLength = 4;
+  static const int _otpLength = 6; // Firebase SMS codes are 6 digits
   static const int _maxFailedAttempts = 3;
 
   int _resendCooldown = 30;
@@ -74,38 +79,74 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Simulate secure API call.
-      await Future.delayed(const Duration(seconds: 1));
+      // Verify the code with Firebase and sign in.
+      await AuthService.verifyCode(_pinController.text);
+      _failedAttempts = 0;
 
-      // Mock OTP validation.
-      // Replace this with Firebase or backend API validation.
-      final bool isValidOTP = _pinController.text == '1234';
+      // Existing users go home; new users complete their profile.
+      final profile = await DatabaseService.getCurrentUserProfile();
 
       if (!mounted) return;
 
-      if (isValidOTP) {
-        _failedAttempts = 0;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('OTP Verified Successfully!'),
+          backgroundColor: AppColors.brandPrimary,
+        ),
+      );
 
+      if (profile != null) {
+        Provider.of<UserProvider>(context, listen: false)
+            .updateDistrict(profile.district);
+        context.go('/home');
+      } else {
+        context.go('/profile-setup');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      if (e.code == 'invalid-verification-code') {
+        _handleFailedAttempt();
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('OTP Verified Successfully!'),
-            backgroundColor: AppColors.brandPrimary,
+          SnackBar(
+            content: Text(AuthService.messageFor(e)),
+            backgroundColor: Colors.redAccent,
           ),
         );
-
-        // Navigate to the profile setup screen after successful OTP verification.
-        context.go('/profile-setup');
-      } else {
-        _handleFailedAttempt();
       }
     } catch (e) {
       if (!mounted) return;
 
-      _handleFailedAttempt();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AuthService.messageFor(e)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _handleResend() async {
+    _startCooldownTimer();
+    try {
+      await AuthService.sendCode(widget.phoneNumber);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A new code has been sent.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AuthService.messageFor(e)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
@@ -186,7 +227,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
               RichText(
                 text: TextSpan(
-                  text: 'Enter the 4-digit code sent to ',
+                  text: 'Enter the 6-digit code sent to ',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
@@ -295,7 +336,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   TextButton(
                     onPressed:
                         (_resendCooldown == 0 && !_isLockedOut)
-                            ? _startCooldownTimer
+                            ? _handleResend
                             : null,
 
                     child: Text(

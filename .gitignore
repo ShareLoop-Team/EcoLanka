@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase / backend
+backend/.firebase/
+backend/*-debug.log
+backend/scripts/node_modules/
+backend/scripts/serviceAccountKey.json
+backend/blaze-upgrade/functions/node_modules/
+
+# JVM crash logs from Gradle
+hs_err_pid*.log
+replay_pid*.log
