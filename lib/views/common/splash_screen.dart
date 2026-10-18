@@ -4,9 +4,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/app_router.dart';
 import '../../config/constants.dart';
+import '../../providers/user_provider.dart';
+import '../../services/auth_service.dart';
+import '../../services/database_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,6 +32,27 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 4500));
 
     if (!mounted) return;
+
+    // Already signed in? Skip onboarding.
+    if (AuthService.currentUser != null) {
+      String target = '/profile-setup';
+      try {
+        final profile = await DatabaseService.getCurrentUserProfile();
+        if (profile != null) {
+          if (!mounted) return;
+          Provider.of<UserProvider>(context, listen: false)
+              .updateDistrict(profile.district);
+          target = '/home';
+        }
+      } catch (_) {
+        // Offline or rules not deployed yet — fall back to profile setup.
+      }
+      final navigatorContext = rootNavigatorKey.currentContext;
+      if (!mounted || _hasNavigated || navigatorContext == null) return;
+      _hasNavigated = true;
+      GoRouter.of(navigatorContext).go(target);
+      return;
+    }
 
     _navigateToLanguage();
   }

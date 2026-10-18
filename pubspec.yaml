@@ -20,8 +20,16 @@ dependencies:
   # State Management for MVC Controllers
   provider: ^6.1.2
 
-  # Backend API HTTP Requests
+  # Backend API HTTP Requests (also used for Cloudinary image uploads)
   http: ^1.2.0
+
+  # Firebase backend (project shareloop-c2157, free Spark plan)
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.0
+  cloud_firestore: ^6.0.0
+
+  # Pick photos for item posts (uploaded to Cloudinary)
+  image_picker: ^1.1.2
 
   # GPS Proximity Search & Location Filtering
   geolocator: ^10.1.0

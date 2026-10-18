@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../config/constants.dart';
+import '../../services/auth_service.dart';
+import '../../services/database_service.dart';
 import '../../widgets/custom_button.dart';
 
 class PhoneNumberScreen extends StatefulWidget {
@@ -77,18 +79,26 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
 
       final fullE164PhoneNumber = '+94$sanitizedNumber';
 
-      // Simulate API handshake delay.
-      await Future.delayed(
-        const Duration(milliseconds: 600),
-      );
+      // Ask Firebase to send the SMS code.
+      final signedInInstantly =
+          await AuthService.sendCode(fullE164PhoneNumber);
 
       if (!mounted) return;
+
+      // Android can verify the number without a code.
+      if (signedInInstantly) {
+        final profile = await DatabaseService.getCurrentUserProfile();
+        if (!mounted) return;
+        context.go(profile == null ? '/profile-setup' : '/home');
+        return;
+      }
 
       // Start anti-abuse rate limit cooldown.
       _startRateLimitCooldown(30);
 
       // Navigate to OTP verification screen.
-      context.go(
+      // push (not go) so the back button returns here.
+      context.push(
         '/otp-verification',
         extra: fullE164PhoneNumber,
       );
@@ -96,11 +106,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Failed to request verification code. '
-            'Please try again.',
-          ),
+        SnackBar(
+          content: Text(AuthService.messageFor(e)),
           backgroundColor: Colors.redAccent,
         ),
       );
