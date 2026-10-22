@@ -13,6 +13,7 @@ A Flutter prototype for a community item-sharing experience in Sri Lanka. The ap
 - [Application structure](#application-structure)
 - [Prerequisites](#prerequisites)
 - [Setup and run](#setup-and-run)
+- [Continuous integration](#continuous-integration)
 - [Tests](#tests)
 - [Limitations and next steps](#limitations-and-next-steps)
 - [Contributing](#contributing)
@@ -137,6 +138,10 @@ To edit localization strings, update the ARB files in lib/l10n/ and regenerate t
 ~~~sh
 flutter gen-l10n
 ~~~
+
+## Continuous integration
+
+The GitHub Actions workflow in .github/workflows/ci.yml runs on pushes and pull requests targeting main. It installs dependencies with flutter pub get and runs flutter test --coverage. The workflow also attempts to upload coverage to Codecov; an upload failure does not fail the job.
 
 ## Tests
 
