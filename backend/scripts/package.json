@@ -1,6 +1,0 @@
-{
-  "name": "shareloop-scripts",
-  "private": true,
-  "scripts": { "seed": "node seed_categories.js" },
-  "dependencies": { "firebase-admin": "^12.6.0" }
-}

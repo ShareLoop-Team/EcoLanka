@@ -195,6 +195,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can change this later in Settings'**
   String get languageSelectionFooter;
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get navExplore;
+
+  /// No description provided for @navRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get navRequests;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for items, categories...'**
+  String get searchHint;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @recommendedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get recommendedForYou;
+
+  /// No description provided for @recommendedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free sustainable giveaways near you'**
+  String get recommendedSubtitle;
+
+  /// No description provided for @nearYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Near you'**
+  String get nearYou;
+
+  /// No description provided for @giveaways.
+  ///
+  /// In en, this message translates to:
+  /// **'Giveaways'**
+  String get giveaways;
+
+  /// No description provided for @needs.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs'**
+  String get needs;
+
+  /// No description provided for @shareItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Share an item'**
+  String get shareItem;
+
+  /// No description provided for @postNeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Post what I need'**
+  String get postNeed;
+
+  /// No description provided for @requestItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Request this item'**
+  String get requestItem;
+
+  /// No description provided for @received.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get received;
+
+  /// No description provided for @sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get sent;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// No description provided for @antiResellDeclaration.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm that I will not resell this donated item.'**
+  String get antiResellDeclaration;
+
+  /// No description provided for @reasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Why do you need this?'**
+  String get reasonLabel;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @useMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get useMyLocation;
 }
 
 class _AppLocalizationsDelegate

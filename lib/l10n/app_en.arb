@@ -1,24 +1,43 @@
 {
   "@@locale": "en",
-
   "badge1": "COMMUNITY FIRST",
   "title1": "Welcome to EcoLanka",
   "description1": "Join Sri Lanka's first green sharing community. Share unused items, reduce waste, and protect our island.",
-
   "badge2": "LOCAL SHARING",
   "title2": "Share & Borrow Easily",
   "description2": "Save money and help neighbors by sharing tools, books, and household goods within your trusted local area.",
-
   "badge3": "GREEN IMPACT",
   "title3": "Build a Greener Future",
   "description3": "Track your environmental impact, earn eco-points, and contribute to a sustainable Sri Lankan lifestyle.",
-
   "skip": "Skip",
   "next": "Next",
   "getStarted": "Get Started",
-
   "languageSelectionTitle": "Select Language",
   "languageSelectionSubtitle": "Select your preferred language",
   "continueButton": "Continue",
-  "languageSelectionFooter": "You can change this later in Settings"
+  "languageSelectionFooter": "You can change this later in Settings",
+  "navHome": "Home",
+  "navExplore": "Explore",
+  "navRequests": "Requests",
+  "navProfile": "Profile",
+  "searchHint": "Search for items, categories...",
+  "categories": "Categories",
+  "viewAll": "View All",
+  "recommendedForYou": "Recommended for you",
+  "recommendedSubtitle": "Free sustainable giveaways near you",
+  "nearYou": "Near you",
+  "giveaways": "Giveaways",
+  "needs": "Needs",
+  "shareItem": "Share an item",
+  "postNeed": "Post what I need",
+  "requestItem": "Request this item",
+  "received": "Received",
+  "sent": "Sent",
+  "free": "Free",
+  "antiResellDeclaration": "I confirm that I will not resell this donated item.",
+  "reasonLabel": "Why do you need this?",
+  "language": "Language",
+  "notifications": "Notifications",
+  "signOut": "Sign out",
+  "useMyLocation": "Use my location"
 }

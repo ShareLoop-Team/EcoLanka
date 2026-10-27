@@ -59,4 +59,77 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get languageSelectionFooter => 'அமைப்புகளில் இதை பின்னர் மாற்றலாம்';
+
+  @override
+  String get navHome => 'முகப்பு';
+
+  @override
+  String get navExplore => 'ஆராய்';
+
+  @override
+  String get navRequests => 'கோரிக்கைகள்';
+
+  @override
+  String get navProfile => 'சுயவிவரம்';
+
+  @override
+  String get searchHint => 'பொருட்கள், வகைகளைத் தேடுங்கள்...';
+
+  @override
+  String get categories => 'வகைகள்';
+
+  @override
+  String get viewAll => 'அனைத்தையும் காண்க';
+
+  @override
+  String get recommendedForYou => 'உங்களுக்கான பரிந்துரைகள்';
+
+  @override
+  String get recommendedSubtitle => 'உங்கள் அருகிலுள்ள இலவச நன்கொடைகள்';
+
+  @override
+  String get nearYou => 'உங்கள் அருகில்';
+
+  @override
+  String get giveaways => 'நன்கொடைகள்';
+
+  @override
+  String get needs => 'தேவைகள்';
+
+  @override
+  String get shareItem => 'ஒரு பொருளைப் பகிருங்கள்';
+
+  @override
+  String get postNeed => 'எனக்குத் தேவையானதைப் பதிவிடுங்கள்';
+
+  @override
+  String get requestItem => 'இந்தப் பொருளைக் கோருங்கள்';
+
+  @override
+  String get received => 'பெறப்பட்டவை';
+
+  @override
+  String get sent => 'அனுப்பியவை';
+
+  @override
+  String get free => 'இலவசம்';
+
+  @override
+  String get antiResellDeclaration =>
+      'நன்கொடையாகப் பெறும் இந்தப் பொருளை மறுவிற்பனை செய்ய மாட்டேன் என்று உறுதிப்படுத்துகிறேன்.';
+
+  @override
+  String get reasonLabel => 'இது ஏன் உங்களுக்குத் தேவை?';
+
+  @override
+  String get language => 'மொழி';
+
+  @override
+  String get notifications => 'அறிவிப்புகள்';
+
+  @override
+  String get signOut => 'வெளியேறு';
+
+  @override
+  String get useMyLocation => 'எனது இருப்பிடத்தைப் பயன்படுத்து';
 }

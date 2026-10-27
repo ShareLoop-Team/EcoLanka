@@ -1,8 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The Shareloop API needs internet in release builds -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- "Use my location" finds the nearest district (coarse is enough) -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:label="ECOLANKA"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        <!-- usesCleartextTraffic: lets the app reach a local http:// API
+             (php artisan serve). Use https and remove it for production. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

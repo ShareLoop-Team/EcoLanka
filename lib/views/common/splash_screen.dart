@@ -9,8 +9,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_router.dart';
 import '../../config/constants.dart';
 import '../../providers/user_provider.dart';
-import '../../services/auth_service.dart';
-import '../../services/database_service.dart';
+import '../../config/dependencies.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -34,18 +33,23 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     // Already signed in? Skip onboarding.
-    if (AuthService.currentUser != null) {
+    if (Dependencies.auth.isSignedIn) {
       String target = '/profile-setup';
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
       try {
-        final profile = await DatabaseService.getCurrentUserProfile();
+        final profile = await Dependencies.users.getCurrentUserProfile();
         if (profile != null) {
           if (!mounted) return;
-          Provider.of<UserProvider>(context, listen: false)
-              .updateDistrict(profile.district);
+          userProvider.updateDistrict(profile.district);
           target = '/home';
         }
       } catch (_) {
-        // Offline or rules not deployed yet — fall back to profile setup.
+        // Offline / server not running — fall back to profile setup.
+      }
+      // The saved sign-in was rejected (expired or revoked) → start over.
+      if (!Dependencies.auth.isSignedIn) {
+        _navigateToLanguage();
+        return;
       }
       final navigatorContext = rootNavigatorKey.currentContext;
       if (!mounted || _hasNavigated || navigatorContext == null) return;
@@ -180,4 +184,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

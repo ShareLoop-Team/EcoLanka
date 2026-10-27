@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/language_provider.dart';
 import '../../providers/user_provider.dart';
-import '../../services/database_service.dart';
+import '../../config/dependencies.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -75,8 +75,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
     setState(() => _isSaving = true);
     try {
-      // 1. Save the profile to Firestore (users/{uid})
-      await DatabaseService.createUserProfile(
+      // 1. Save the profile (POST /api/users)
+      await Dependencies.users.createUserProfile(
         displayName: _nameController.text.trim(),
         district: _selectedDistrict,
         role: _selectedRole,

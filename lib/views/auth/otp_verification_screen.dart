@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import '../../config/constants.dart';
 import '../../providers/user_provider.dart';
-import '../../services/auth_service.dart';
-import '../../services/database_service.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/custom_button.dart';
+import '../../config/dependencies.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String phoneNumber;
@@ -27,7 +25,7 @@ class OTPVerificationScreen extends StatefulWidget {
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final TextEditingController _pinController = TextEditingController();
 
-  static const int _otpLength = 6; // Firebase SMS codes are 6 digits
+  static const int _otpLength = 6; // Shareloop SMS codes are 6 digits
   static const int _maxFailedAttempts = 3;
 
   int _resendCooldown = 30;
@@ -79,12 +77,12 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Verify the code with Firebase and sign in.
-      await AuthService.verifyCode(_pinController.text);
+      // Verify the code with the Shareloop API and sign in.
+      await Dependencies.auth.verifyCode(_pinController.text);
       _failedAttempts = 0;
 
       // Existing users go home; new users complete their profile.
-      final profile = await DatabaseService.getCurrentUserProfile();
+      final profile = await Dependencies.users.getCurrentUserProfile();
 
       if (!mounted) return;
 
@@ -102,28 +100,19 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       } else {
         context.go('/profile-setup');
       }
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
       if (!mounted) return;
 
-      if (e.code == 'invalid-verification-code') {
+      if (Dependencies.auth.isInvalidCode(e)) {
         _handleFailedAttempt();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AuthService.messageFor(e)),
+            content: Text(Dependencies.auth.messageFor(e)),
             backgroundColor: Colors.redAccent,
           ),
         );
       }
-    } catch (e) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AuthService.messageFor(e)),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -134,7 +123,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   Future<void> _handleResend() async {
     _startCooldownTimer();
     try {
-      await AuthService.sendCode(widget.phoneNumber);
+      await Dependencies.auth.sendCode(widget.phoneNumber);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('A new code has been sent.')),
@@ -143,7 +132,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AuthService.messageFor(e)),
+          content: Text(Dependencies.auth.messageFor(e)),
           backgroundColor: Colors.redAccent,
         ),
       );

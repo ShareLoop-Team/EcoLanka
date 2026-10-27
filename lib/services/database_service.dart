@@ -1,61 +1,47 @@
-// User profile reads/writes in Firestore (users/{uid}).
-// Schema: docs/SCHEMA.md · Rules: backend/firestore.rules
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// API implementation of UserRepository — /users.
 
 import '../models/user.dart';
+import '../repositories/repositories.dart';
+import 'api_client.dart';
 
-class DatabaseService {
-  DatabaseService._();
+class ApiUserService implements UserRepository {
+  ApiUserService(this._api);
 
-  static final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ApiClient _api;
 
-  static DocumentReference<Map<String, dynamic>> userRef(String uid) =>
-      _db.collection('users').doc(uid);
+  static AppUser _user(Map<String, dynamic> m) => AppUser.fromMap(m['uid'] as String, m);
 
-  /// The signed-in user's profile, or null if they haven't completed setup.
-  static Future<AppUser?> getCurrentUserProfile() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return null;
-    final snap = await userRef(uid).get();
-    if (!snap.exists) return null;
-    return AppUser.fromMap(snap.id, snap.data()!);
+  static List<AppUser> _users(dynamic json) => jsonList(json).map(_user).toList();
+
+  @override
+  Future<AppUser?> getUser(String uid) async {
+    final json = await _api.getOrNull('/users/$uid');
+    return json == null ? null : _user(json as Map<String, dynamic>);
   }
 
-  /// Creates the profile after first sign-in (profile setup screen).
-  static Future<void> createUserProfile({
-    required String displayName,
-    required String district,
-    required String role, // donor | requester | both
-    required String language, // en | si | ta
-  }) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw StateError('Not signed in.');
+  @override
+  Stream<AppUser?> watchUser(String uid) => _api.watch(
+      '/users/$uid', (json) => json == null ? null : _user(json as Map<String, dynamic>));
 
-    final profile = AppUser(
-      uid: user.uid,
-      displayName: displayName,
-      phone: user.phoneNumber,
-      email: user.email,
-      role: role,
-      language: language,
-      district: district,
-    );
+  /// First-time profile. The server sets the uid, counters and timestamps.
+  @override
+  Future<void> createUser(String uid, Map<String, dynamic> data) => _api.post('/users', {
+        'displayName': data['displayName'],
+        'district': data['district'],
+        'role': data['role'],
+        'language': data['language'],
+        if (data['email'] != null) 'email': data['email'],
+      });
 
-    await userRef(user.uid).set({
-      ...profile.toMap(),
-      'createdAt': FieldValue.serverTimestamp(),
-      'lastActiveAt': FieldValue.serverTimestamp(),
-    });
-  }
+  @override
+  Future<void> updateUser(String uid, Map<String, dynamic> fields) =>
+      _api.patch('/users/$uid', fields);
 
-  /// Updates editable profile fields (not role/points/badges — rules block those).
-  static Future<void> updateProfile(Map<String, dynamic> fields) async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    await userRef(uid).update({
-      ...fields,
-      'lastActiveAt': FieldValue.serverTimestamp(),
-    });
-  }
+  @override
+  Stream<List<AppUser>> topDonors({int limit = 20}) =>
+      _api.watch('/users/leaderboard', _users, query: {'limit': '$limit'}, every: const Duration(seconds: 30));
+
+  @override
+  Stream<List<AppUser>> donorsOfMonth(String monthKey) =>
+      _api.watch('/users/monthly', _users, query: {'month': monthKey}, every: const Duration(seconds: 30));
 }

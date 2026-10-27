@@ -58,4 +58,77 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageSelectionFooter => 'You can change this later in Settings';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navExplore => 'Explore';
+
+  @override
+  String get navRequests => 'Requests';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
+  String get searchHint => 'Search for items, categories...';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get recommendedForYou => 'Recommended for you';
+
+  @override
+  String get recommendedSubtitle => 'Free sustainable giveaways near you';
+
+  @override
+  String get nearYou => 'Near you';
+
+  @override
+  String get giveaways => 'Giveaways';
+
+  @override
+  String get needs => 'Needs';
+
+  @override
+  String get shareItem => 'Share an item';
+
+  @override
+  String get postNeed => 'Post what I need';
+
+  @override
+  String get requestItem => 'Request this item';
+
+  @override
+  String get received => 'Received';
+
+  @override
+  String get sent => 'Sent';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get antiResellDeclaration =>
+      'I confirm that I will not resell this donated item.';
+
+  @override
+  String get reasonLabel => 'Why do you need this?';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get useMyLocation => 'Use my location';
 }

@@ -58,4 +58,77 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get languageSelectionFooter => 'මෙය පසුව Settings හරහා වෙනස් කළ හැක';
+
+  @override
+  String get navHome => 'මුල් පිටුව';
+
+  @override
+  String get navExplore => 'ගවේෂණය';
+
+  @override
+  String get navRequests => 'ඉල්ලීම්';
+
+  @override
+  String get navProfile => 'පැතිකඩ';
+
+  @override
+  String get searchHint => 'භාණ්ඩ, කාණ්ඩ සොයන්න...';
+
+  @override
+  String get categories => 'කාණ්ඩ';
+
+  @override
+  String get viewAll => 'සියල්ල බලන්න';
+
+  @override
+  String get recommendedForYou => 'ඔබට නිර්දේශිත';
+
+  @override
+  String get recommendedSubtitle => 'ඔබ අසල නොමිලේ ලැබෙන භාණ්ඩ';
+
+  @override
+  String get nearYou => 'ඔබ අසල';
+
+  @override
+  String get giveaways => 'පරිත්‍යාග';
+
+  @override
+  String get needs => 'අවශ්‍යතා';
+
+  @override
+  String get shareItem => 'භාණ්ඩයක් බෙදාගන්න';
+
+  @override
+  String get postNeed => 'මට අවශ්‍ය දේ පළ කරන්න';
+
+  @override
+  String get requestItem => 'මෙම භාණ්ඩය ඉල්ලන්න';
+
+  @override
+  String get received => 'ලැබුණු';
+
+  @override
+  String get sent => 'යැවූ';
+
+  @override
+  String get free => 'නොමිලේ';
+
+  @override
+  String get antiResellDeclaration =>
+      'පරිත්‍යාග කළ මෙම භාණ්ඩය නැවත විකුණන්නේ නැති බව මම තහවුරු කරමි.';
+
+  @override
+  String get reasonLabel => 'ඔබට මෙය අවශ්‍ය ඇයි?';
+
+  @override
+  String get language => 'භාෂාව';
+
+  @override
+  String get notifications => 'දැනුම්දීම්';
+
+  @override
+  String get signOut => 'ඉවත් වන්න';
+
+  @override
+  String get useMyLocation => 'මගේ ස්ථානය භාවිතා කරන්න';
 }

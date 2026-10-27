@@ -1,6 +1,6 @@
-// items/{itemId} — see docs/SCHEMA.md
+// GET /items — see docs/SCHEMA.md
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../utils/json.dart';
 
 class Item {
   final String id;
@@ -8,8 +8,8 @@ class Item {
   final String title;
   final String description;
   final String categoryId;
-  final String condition; // new | like_new | good | fair
-  final List<String> images; // Cloudinary URLs, max 5
+  final String condition; // new | good | used
+  final List<String> images; // photo URLs (served by the API), max 5
   final String district;
   final String city;
   final String status; // available | reserved | donated | removed
@@ -31,10 +31,9 @@ class Item {
     this.createdAt,
   });
 
-  factory Item.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final m = doc.data()!;
+  factory Item.fromJson(Map<String, dynamic> m) {
     return Item(
-      id: doc.id,
+      id: m['id'] as String,
       donorId: m['donorId'] as String,
       title: m['title'] as String? ?? '',
       description: m['description'] as String? ?? '',
@@ -45,13 +44,13 @@ class Item {
       city: m['city'] as String? ?? '',
       status: m['status'] as String? ?? 'available',
       requestCount: (m['requestCount'] as num?)?.toInt() ?? 0,
-      createdAt: (m['createdAt'] as Timestamp?)?.toDate(),
+      createdAt: parseDate(m['createdAt']),
     );
   }
 
-  /// Fields for a new item (status/counters/timestamps set here).
-  Map<String, dynamic> toNewDoc() => {
-        'donorId': donorId,
+  /// Body for POST /items (the server sets donor, status, counters, timestamps).
+  Map<String, dynamic> toNewJson() => {
+        'id': id,
         'title': title,
         'description': description,
         'categoryId': categoryId,
@@ -59,9 +58,5 @@ class Item {
         'images': images,
         'district': district,
         'city': city,
-        'status': 'available',
-        'requestCount': 0,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
       };
 }

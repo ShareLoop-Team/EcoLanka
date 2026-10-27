@@ -5,9 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../config/constants.dart';
-import '../../services/auth_service.dart';
-import '../../services/database_service.dart';
 import '../../widgets/custom_button.dart';
+import '../../config/dependencies.dart';
 
 class PhoneNumberScreen extends StatefulWidget {
   const PhoneNumberScreen({super.key});
@@ -79,15 +78,15 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
 
       final fullE164PhoneNumber = '+94$sanitizedNumber';
 
-      // Ask Firebase to send the SMS code.
+      // Ask the Shareloop API to send the SMS code.
       final signedInInstantly =
-          await AuthService.sendCode(fullE164PhoneNumber);
+          await Dependencies.auth.sendCode(fullE164PhoneNumber);
 
       if (!mounted) return;
 
       // Android can verify the number without a code.
       if (signedInInstantly) {
-        final profile = await DatabaseService.getCurrentUserProfile();
+        final profile = await Dependencies.users.getCurrentUserProfile();
         if (!mounted) return;
         context.go(profile == null ? '/profile-setup' : '/home');
         return;
@@ -107,7 +106,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AuthService.messageFor(e)),
+          content: Text(Dependencies.auth.messageFor(e)),
           backgroundColor: Colors.redAccent,
         ),
       );
