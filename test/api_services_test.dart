@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:ecolanka/models/item.dart';
+import 'package:ecolanka/services/api_auth_service.dart';
 import 'package:ecolanka/services/api_client.dart';
 import 'package:ecolanka/services/item_service.dart';
 import 'package:ecolanka/services/request_service.dart';
@@ -38,6 +39,64 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
+  });
+
+  group('ApiAuthService (API sends the SMS, e.g. via httpSMS)', () {
+    test('sign-in stores the session and sends the bearer token afterwards', () async {
+      final seen = <http.Request>[];
+      final client = MockClient((req) async {
+        seen.add(req);
+        switch (req.url.path) {
+          case '/api/auth/send-code':
+            return json({'sent': true});
+          case '/api/auth/verify':
+            expect(jsonDecode(req.body), {'phone': '+94770000001', 'code': '123456'});
+            return json({'token': 'tok', 'uid': 'u1', 'phone': '+94770000001', 'hasProfile': true});
+          case '/api/auth/logout':
+            return json({'ok': true});
+        }
+        return json({'message': 'nope'}, 404);
+      });
+      final api = ApiClient(baseUrl: 'http://x/api', httpClient: client, prefs: prefs);
+      final auth = ApiAuthService(api);
+
+      expect(auth.currentUid, isNull);
+      expect(await auth.sendCode('+94770000001'), isFalse);
+      await auth.verifyCode('123456');
+      expect(auth.currentUid, 'u1');
+
+      await auth.signOut();
+      expect(seen.last.headers['Authorization'], 'Bearer tok');
+      expect(auth.currentUid, isNull);
+    });
+
+    test('wrong code and SMS failures give friendly messages', () async {
+      final client = MockClient((req) async => req.url.path.endsWith('send-code')
+          ? json({'sent': true})
+          : json({'message': 'Incorrect code. Please check and try again.', 'code': 'invalid-verification-code'}, 422));
+      final auth = ApiAuthService(ApiClient(baseUrl: 'http://x/api', httpClient: client, prefs: prefs));
+      await auth.sendCode('+94770000001');
+      try {
+        await auth.verifyCode('000000');
+        fail('should throw');
+      } catch (e) {
+        expect(auth.isInvalidCode(e), isTrue);
+        expect(auth.messageFor(e), 'Incorrect code. Please check and try again.');
+      }
+
+      final offline = ApiAuthService(ApiClient(
+        baseUrl: 'http://x/api',
+        httpClient: MockClient((_) async => json(
+            {'message': 'We could not send the SMS right now. Please try again in a minute.', 'code': 'sms-failed'}, 503)),
+        prefs: prefs,
+      ));
+      try {
+        await offline.sendCode('+94771234567');
+        fail('should throw');
+      } catch (e) {
+        expect(offline.messageFor(e), contains('could not send the SMS'));
+      }
+    });
   });
 
   group('ApiClient session', () {

@@ -20,6 +20,16 @@ class AppConfig {
     return 'http://localhost:8000/api';
   }
 
+  /// Phone sign-in:
+  ///   'api'      (default) — the API sends the SMS code (backend SMS_DRIVER,
+  ///              e.g. httpSMS from your Android phone) and checks it.
+  ///   'firebase' — Firebase Authentication sends / checks the code, then the
+  ///              ID token is exchanged at POST /api/auth/firebase.
+  ///   flutter run --dart-define=AUTH_PROVIDER=firebase
+  static const String authProvider = String.fromEnvironment('AUTH_PROVIDER', defaultValue: 'api');
+
+  static bool get useFirebaseAuth => authProvider == 'firebase';
+
   /// Max photos per item (also enforced by the API).
   static const int maxItemImages = 5;
 }

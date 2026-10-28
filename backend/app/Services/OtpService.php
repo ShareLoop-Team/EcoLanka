@@ -6,6 +6,7 @@ use App\Models\OtpCode;
 use App\Services\Sms\SmsSender;
 use App\Exceptions\ApiError;
 use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 /**
  * Phone OTP sign-in (replaces Firebase phone auth).
@@ -36,7 +37,14 @@ class OtpService
             'code_hash' => Hash::make($code),
             'expires_at' => now()->addMinutes(config('otp.ttl_minutes')),
         ]);
-        $this->sms->send($phone, "Your Shareloop code is {$code}. It expires in ".config('otp.ttl_minutes').' minutes.');
+        try {
+            $this->sms->send($phone, "Your EcoLanka code is {$code}. It expires in ".config('otp.ttl_minutes').' minutes. Do not share it with anyone.');
+        } catch (Throwable $e) {
+            // e.g. the httpSMS phone is offline — don't leave an unusable code behind.
+            report($e);
+            OtpCode::where('phone', $phone)->whereNull('used_at')->update(['used_at' => now()]);
+            throw new ApiError('We could not send the SMS right now. Please try again in a minute.', 'sms-failed', 503);
+        }
 
         return config('otp.expose_code') ? $code : null;
     }

@@ -14,6 +14,8 @@ import '../controllers/request_controller.dart';
 import '../controllers/review_controller.dart';
 import '../controllers/user_controller.dart';
 import '../repositories/repositories.dart';
+import '../config/app_config.dart';
+import '../services/api_auth_service.dart';
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
 import '../services/image_service.dart';
@@ -56,7 +58,8 @@ class Dependencies {
     LocationProvider? locationProvider,
   }) {
     final client = api = apiClient ?? ApiClient();
-    final authRepo = authRepository ?? FirebaseAuthService(client);
+    final authRepo = authRepository ??
+        (AppConfig.useFirebaseAuth ? FirebaseAuthService(client) : ApiAuthService(client));
     final userRepo = userRepository ?? ApiUserService(client);
     final itemRepo = itemRepository ?? ApiItemService(client);
     final needRepo = needRepository ?? ApiNeedService(client);
