@@ -4,9 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/app_router.dart';
 import '../../config/constants.dart';
+import '../../providers/user_provider.dart';
+import '../../config/dependencies.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,6 +31,32 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 4500));
 
     if (!mounted) return;
+
+    // Already signed in? Skip onboarding.
+    if (Dependencies.auth.isSignedIn) {
+      String target = '/profile-setup';
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      try {
+        final profile = await Dependencies.users.getCurrentUserProfile();
+        if (profile != null) {
+          if (!mounted) return;
+          userProvider.updateDistrict(profile.district);
+          target = '/home';
+        }
+      } catch (_) {
+        // Offline / server not running — fall back to profile setup.
+      }
+      // The saved sign-in was rejected (expired or revoked) → start over.
+      if (!Dependencies.auth.isSignedIn) {
+        _navigateToLanguage();
+        return;
+      }
+      final navigatorContext = rootNavigatorKey.currentContext;
+      if (!mounted || _hasNavigated || navigatorContext == null) return;
+      _hasNavigated = true;
+      GoRouter.of(navigatorContext).go(target);
+      return;
+    }
 
     _navigateToLanguage();
   }
@@ -155,4 +184,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

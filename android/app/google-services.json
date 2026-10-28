@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "207503618048",
+    "project_id": "shareloop-c2157",
+    "storage_bucket": "shareloop-c2157.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207503618048:android:83fbf17ccbe828730ba8e5",
+        "android_client_info": {
+          "package_name": "com.Shareloop.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207503618048-p14cnhre2m3igrdrf1ip6rp3q5tr4fln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5sUMHa_TkL005atkp19D5qvEnKeYSd0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207503618048-p14cnhre2m3igrdrf1ip6rp3q5tr4fln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207503618048:android:e5fabeec6e0ff42f0ba8e5",
+        "android_client_info": {
+          "package_name": "com.ecolanka.ecolanka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207503618048-p14cnhre2m3igrdrf1ip6rp3q5tr4fln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5sUMHa_TkL005atkp19D5qvEnKeYSd0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207503618048-p14cnhre2m3igrdrf1ip6rp3q5tr4fln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

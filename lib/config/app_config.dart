@@ -1,101 +1,25 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'constants.dart';
+// App-wide backend configuration.
+// (The theme lives in theme.dart; this file used to hold a duplicate copy of it.)
 
-class AppTheme {
-  static ThemeData get lightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      primaryColor: AppColors.brandPrimary,
-      scaffoldBackgroundColor: AppColors.brandTertiary,
-      
-      // Color Scheme Mapping
-      colorScheme: const ColorScheme.light(
-        primary: AppColors.brandPrimary,
-        secondary: AppColors.accentFresh,
-        surface: AppColors.surfaceBg,
-        error: AppColors.colorError,
-        onPrimary: AppColors.onBrand,
-        onSurface: AppColors.textPrimary,
-      ),
+import 'package:flutter/foundation.dart';
 
-      // Text Theme
-      textTheme: GoogleFonts.interTextTheme().copyWith(
-        headlineLarge: TextStyle(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.bold,
-        ),
-        bodyLarge: TextStyle(
-          color: AppColors.textPrimary,
-        ),
-        bodyMedium: TextStyle(
-          color: AppColors.textSecondary,
-        ),
-      ),
+class AppConfig {
+  AppConfig._();
 
-      // App Bar Theme
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.brandTertiary,
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
-        titleTextStyle: TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+  /// Shareloop Laravel API (backend/). Override at build time:
+  ///   flutter run --dart-define=API_BASE_URL=http://192.168.1.20:8000/api
+  /// Defaults: web / desktop → localhost, Android emulator → 10.0.2.2 (the
+  /// host computer). A real phone needs your computer's LAN IP.
+  static const String _apiBaseUrlOverride = String.fromEnvironment('API_BASE_URL');
 
-      // Input Decoration Theme (Text fields)
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: AppColors.inputBg,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.borderPrimary),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.borderPrimary),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.borderSelected, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.colorError),
-        ),
-        hintStyle: const TextStyle(color: AppColors.textTertiary),
-      ),
-
-      // Primary Button Theme
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.brandPrimary,
-          foregroundColor: AppColors.onBrand,
-          elevation: 0,
-          minimumSize: const Size(double.infinity, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-
-// Card Theme
-      cardTheme: CardThemeData(
-        color: AppColors.surfaceBg,
-        elevation: 1,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.borderPrimary),
-        ),
-      ),
-    );
+  static String get apiBaseUrl {
+    if (_apiBaseUrlOverride.isNotEmpty) return _apiBaseUrlOverride;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8000/api';
+    }
+    return 'http://localhost:8000/api';
   }
+
+  /// Max photos per item (also enforced by the API).
+  static const int maxItemImages = 5;
 }

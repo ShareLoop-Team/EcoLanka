@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../providers/language_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../config/dependencies.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
   const ProfileSetupScreen({super.key});
@@ -65,14 +67,42 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   }
 
   // Handle completion, save data, and navigate to home
-  void _handleComplete() {
-    if (_formKey.currentState!.validate() && _isFormValid) {
-      // 1. Update the UserProvider with selected district
+  bool _isSaving = false;
+
+  Future<void> _handleComplete() async {
+    if (_isSaving) return;
+    if (!(_formKey.currentState!.validate() && _isFormValid)) return;
+
+    setState(() => _isSaving = true);
+    try {
+      // 1. Save the profile (POST /api/users)
+      await Dependencies.users.createUserProfile(
+        displayName: _nameController.text.trim(),
+        district: _selectedDistrict,
+        role: _selectedRole,
+        language: Provider.of<LanguageProvider>(context, listen: false)
+            .appLocale
+            .languageCode,
+      );
+
+      if (!mounted) return;
+
+      // 2. Update the UserProvider with selected district
       Provider.of<UserProvider>(context, listen: false)
           .updateDistrict(_selectedDistrict);
-      
-      // 2. Navigate to home screen after profile setup is complete
+
+      // 3. Navigate to home screen after profile setup is complete
       context.go('/home');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not save your profile: $e'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 

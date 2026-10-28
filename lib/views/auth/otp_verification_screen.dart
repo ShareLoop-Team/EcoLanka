@@ -4,7 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import '../../config/constants.dart';
+import '../../providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/custom_button.dart';
+import '../../config/dependencies.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final String phoneNumber;
@@ -22,7 +25,7 @@ class OTPVerificationScreen extends StatefulWidget {
 class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final TextEditingController _pinController = TextEditingController();
 
-  static const int _otpLength = 4;
+  static const int _otpLength = 6; // Shareloop SMS codes are 6 digits
   static const int _maxFailedAttempts = 3;
 
   int _resendCooldown = 30;
@@ -74,38 +77,65 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Simulate secure API call.
-      await Future.delayed(const Duration(seconds: 1));
+      // Verify the code with the Shareloop API and sign in.
+      await Dependencies.auth.verifyCode(_pinController.text);
+      _failedAttempts = 0;
 
-      // Mock OTP validation.
-      // Replace this with Firebase or backend API validation.
-      final bool isValidOTP = _pinController.text == '1234';
+      // Existing users go home; new users complete their profile.
+      final profile = await Dependencies.users.getCurrentUserProfile();
 
       if (!mounted) return;
 
-      if (isValidOTP) {
-        _failedAttempts = 0;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('OTP Verified Successfully!'),
+          backgroundColor: AppColors.brandPrimary,
+        ),
+      );
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('OTP Verified Successfully!'),
-            backgroundColor: AppColors.brandPrimary,
-          ),
-        );
-
-        // Navigate to the profile setup screen after successful OTP verification.
-        context.go('/profile-setup');
+      if (profile != null) {
+        Provider.of<UserProvider>(context, listen: false)
+            .updateDistrict(profile.district);
+        context.go('/home');
       } else {
-        _handleFailedAttempt();
+        context.go('/profile-setup');
       }
     } catch (e) {
       if (!mounted) return;
 
-      _handleFailedAttempt();
+      if (Dependencies.auth.isInvalidCode(e)) {
+        _handleFailedAttempt();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Dependencies.auth.messageFor(e)),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _handleResend() async {
+    _startCooldownTimer();
+    try {
+      await Dependencies.auth.sendCode(widget.phoneNumber);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('A new code has been sent.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(Dependencies.auth.messageFor(e)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
@@ -186,7 +216,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
               RichText(
                 text: TextSpan(
-                  text: 'Enter the 4-digit code sent to ',
+                  text: 'Enter the 6-digit code sent to ',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
@@ -295,7 +325,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   TextButton(
                     onPressed:
                         (_resendCooldown == 0 && !_isLockedOut)
-                            ? _startCooldownTimer
+                            ? _handleResend
                             : null,
 
                     child: Text(

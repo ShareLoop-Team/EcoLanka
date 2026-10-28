@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../config/constants.dart';
 import '../../widgets/custom_button.dart';
+import '../../config/dependencies.dart';
 
 class PhoneNumberScreen extends StatefulWidget {
   const PhoneNumberScreen({super.key});
@@ -77,18 +78,26 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
 
       final fullE164PhoneNumber = '+94$sanitizedNumber';
 
-      // Simulate API handshake delay.
-      await Future.delayed(
-        const Duration(milliseconds: 600),
-      );
+      // Ask the Shareloop API to send the SMS code.
+      final signedInInstantly =
+          await Dependencies.auth.sendCode(fullE164PhoneNumber);
 
       if (!mounted) return;
+
+      // Android can verify the number without a code.
+      if (signedInInstantly) {
+        final profile = await Dependencies.users.getCurrentUserProfile();
+        if (!mounted) return;
+        context.go(profile == null ? '/profile-setup' : '/home');
+        return;
+      }
 
       // Start anti-abuse rate limit cooldown.
       _startRateLimitCooldown(30);
 
       // Navigate to OTP verification screen.
-      context.go(
+      // push (not go) so the back button returns here.
+      context.push(
         '/otp-verification',
         extra: fullE164PhoneNumber,
       );
@@ -96,11 +105,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Failed to request verification code. '
-            'Please try again.',
-          ),
+        SnackBar(
+          content: Text(Dependencies.auth.messageFor(e)),
           backgroundColor: Colors.redAccent,
         ),
       );

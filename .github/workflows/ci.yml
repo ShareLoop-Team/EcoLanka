@@ -1,4 +1,4 @@
-name: Flutter CI & Codecov
+name: Flutter & Laravel CI
 
 on:
   push:
@@ -31,3 +31,27 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: false
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, fileinfo, gd
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run Laravel tests
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan test

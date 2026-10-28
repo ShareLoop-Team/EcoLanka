@@ -20,8 +20,15 @@ dependencies:
   # State Management for MVC Controllers
   provider: ^6.1.2
 
-  # Backend API HTTP Requests
+  # Shareloop Laravel REST API (backend/) — JSON requests and photo uploads
   http: ^1.2.0
+
+  # Phone (OTP) sign-in only — all data lives in the Laravel API
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.0
+
+  # Pick photos for item posts (uploaded to the API)
+  image_picker: ^1.1.2
 
   # GPS Proximity Search & Location Filtering
   geolocator: ^10.1.0
