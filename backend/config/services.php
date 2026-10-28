@@ -40,6 +40,13 @@ return [
         'project_id' => env('FIREBASE_PROJECT_ID', 'shareloop-c2157'),
     ],
 
+    // httpSMS: SMS sent from your own Android phone (app + api.httpsms.com).
+    'httpsms' => [
+        'url' => env('HTTPSMS_URL', 'https://api.httpsms.com'),
+        'api_key' => env('HTTPSMS_API_KEY'),
+        'from' => env('HTTPSMS_FROM'),
+    ],
+
     'notifylk' => [
         'user_id' => env('NOTIFYLK_USER_ID'),
         'api_key' => env('NOTIFYLK_API_KEY'),

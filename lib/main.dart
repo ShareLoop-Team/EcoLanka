@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
 
+import 'config/app_config.dart';
 import 'config/app_router.dart';
 import 'config/theme.dart';
 import 'config/dependencies.dart';
@@ -20,14 +21,16 @@ import 'l10n/app_localizations.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebase is used for phone (OTP) sign-in only (project shareloop-c2157).
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // Debug builds (or a local demo build with --dart-define=FIREBASE_TEST_PHONES=true):
-  // Firebase test numbers (+94 77 000 0001 / 123456) work without
-  // Play Integrity / reCAPTCHA or a registered SHA-1. Real numbers need those.
-  const testPhones = bool.fromEnvironment('FIREBASE_TEST_PHONES');
-  if (kDebugMode || testPhones) {
-    await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+  // Optional: Firebase phone sign-in (--dart-define=AUTH_PROVIDER=firebase).
+  // By default the API sends the SMS code itself (httpSMS / Notify.lk).
+  if (AppConfig.useFirebaseAuth) {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    // Debug builds (or --dart-define=FIREBASE_TEST_PHONES=true): Firebase test
+    // numbers work without Play Integrity / reCAPTCHA or a registered SHA-1.
+    const testPhones = bool.fromEnvironment('FIREBASE_TEST_PHONES');
+    if (kDebugMode || testPhones) {
+      await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    }
   }
 
   // Shareloop Laravel API (backend/) — restore the saved sign-in first.

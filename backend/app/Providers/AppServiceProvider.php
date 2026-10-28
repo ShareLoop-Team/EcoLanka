@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Sms\HttpSmsSender;
 use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\NotifyLkSmsSender;
 use App\Services\Sms\SmsSender;
@@ -15,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(SmsSender::class, fn () => match (config('otp.sms_driver')) {
+            'httpsms' => new HttpSmsSender,
             'notifylk' => new NotifyLkSmsSender,
             default => new LogSmsSender,
         });
